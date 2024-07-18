@@ -1,0 +1,46 @@
+version: "3.3"
+services:
+
+    # PHP service
+    twitter_app:
+        build: .
+        container_name: twitter_app
+        working_dir: "/var/www"
+        volumes:
+            - ../:/var/www
+            - ./docker-php-custom.ini:/usr/local/etc/php/conf.d/docker-php-custom.ini
+        networks:
+            - app-network-2022
+    
+    twitter_db:
+        image: postgres:15
+        container_name: twitter_db
+        ports:
+            - '5433:5432'
+        environment:
+            PGPASSWORD: '${DB_PASSWORD:-secret}'
+            POSTGRES_DB: '${DB_DATABASE}'
+            POSTGRES_USER: '${DB_USERNAME}'
+            POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
+        volumes:
+            - './db:/var/lib/postgresql/data'
+        networks:
+            - app-network-2022
+        healthcheck:
+          test: ["CMD", "pg_isready", "-q", "-d", "${DB_DATABASE}", "-U", "${DB_USERNAME}"]
+
+    # Nginx service
+    twitter_nginx:
+        image: nginx:alpine
+        container_name: twitter_nginx
+        ports:
+            - 8080:80
+        volumes:
+            - ../:/var/www
+            - ./nginx/conf.d/:/etc/nginx/conf.d/
+        networks:
+            - app-network-2022
+
+networks:
+    app-network-2022:
+        driver: bridge
