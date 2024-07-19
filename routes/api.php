@@ -21,7 +21,13 @@ Route::post('auth/login', [AuthController::class, 'login'])->name('login');
 Route::post('auth/register', [AuthController::class, 'register'])->name('register');
 Route::post('auth/change-password', [AuthController::class, 'changePassword'])->middleware('auth:sanctum')->name('change-password');
 
-Route::apiResource('posts', PostController::class)->middleware('auth:sanctum')->name('store', 'posts');
+Route::apiResource('posts', PostController::class)
+        ->middleware('auth:sanctum')
+        ->name('store', 'store_post')
+        ->name('show', 'show_post')
+        ->name('update', 'update_post')
+        ->name('destroy', 'delete_post');
+
 Route::apiResource('files', FileController::class)->middleware('auth:sanctum');
 
 Route::get('profile/show/{user}', [ProfileController::class, 'me'])->middleware('auth:sanctum');

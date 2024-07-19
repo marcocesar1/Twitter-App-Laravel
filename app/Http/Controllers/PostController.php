@@ -72,20 +72,13 @@ class PostController extends Controller
      */
     public function show(string $id, ShowPostUseCase $usecase)
     {        
-        try {
-            $post = $usecase->execute(
-                id: $id
-            );
-            
-            return new ApiSuccessResponse(
-                data: $post
-            );
-        } catch (Exception $e) {
-            return new ApiErrorResponse(
-                message: "Something went wrong: {$e->getMessage()}",
-                exception: $e,
-            );
-        }
+        $post = $usecase->execute(
+            id: $id
+        );
+        
+        return new ApiSuccessResponse(
+            data: $post
+        );
     }
 
     /**

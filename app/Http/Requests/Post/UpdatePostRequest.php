@@ -23,7 +23,7 @@ class UpdatePostRequest extends FormRequest
     {
         return [
             'body' => 'required|string|max:280',
-            'files' => 'array',
+            'files' => 'array|present',
             'files.*' => 'integer'
         ];
     }

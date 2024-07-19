@@ -19,7 +19,7 @@ class CreatePostTest extends TestCase
     #[Test]
     public function user_can_create_post_with_files()
     {
-        $file = File::factory()->create();
+        $file = File::factory()->image(50)->create();
         
         $data = [
             'body' => 'my first post',
@@ -29,7 +29,7 @@ class CreatePostTest extends TestCase
         $response = $this->withHeaders([
                             'Authorization' => 'Bearer ' . $this->token,
                         ])->postJson(
-                            uri: route('posts'),
+                            uri: route('store_post'),
                             data: $data,
                         );
 
@@ -58,7 +58,7 @@ class CreatePostTest extends TestCase
         $response = $this->withHeaders([
                             'Authorization' => 'Bearer ' . $this->token,
                         ])->postJson(
-                            uri: route('posts'),
+                            uri: route('store_post'),
                             data: $data,
                         );
 
@@ -84,7 +84,7 @@ class CreatePostTest extends TestCase
         $response = $this->withHeaders([
                             'Authorization' => 'Bearer ' . $this->token,
                         ])->postJson(
-                            uri: route('posts'),
+                            uri: route('store_post'),
                             data: $data,
                         );
 
@@ -110,7 +110,7 @@ class CreatePostTest extends TestCase
         $response = $this->withHeaders([
                             'Authorization' => 'Bearer ' . $this->token,
                         ])->postJson(
-                            uri: route('posts'),
+                            uri: route('store_post'),
                             data: $data,
                         );
 
@@ -127,10 +127,10 @@ class CreatePostTest extends TestCase
     }
 
     #[Test]
-    public function user_not_logged_cant_create_post()
+    public function a_unauthenticated_user_cannot_create_post()
     {
         $response = $this->postJson(
-            uri: route('posts')
+            uri: route('store_post')
         );
 
         $response->assertUnauthorized();
