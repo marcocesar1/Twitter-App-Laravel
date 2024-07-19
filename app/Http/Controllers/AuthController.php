@@ -28,7 +28,8 @@ class AuthController extends Controller
     {
         try {
             $userInfo = $usecase->execute(
-                userData: $request->validated()
+                email: $request->email,
+                password: $request->password,
             );
 
             return new ApiSuccessResponse(

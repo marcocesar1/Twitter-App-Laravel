@@ -32,7 +32,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'file_id' => fn() => File::factory()->create(),
+            'file_id' => fn() => File::factory()->image(100)->create(),
         ];
     }
 

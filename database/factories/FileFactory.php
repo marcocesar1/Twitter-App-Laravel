@@ -24,11 +24,21 @@ class FileFactory extends Factory
      */
     public function definition(): array
     {
-        $path = RandomImageService::generate(450);
-
         return [
-            'path' => $path,
+            //'path' => $path,
             'mime_type' => 'image/jpeg'
         ];
+    }
+
+    public function image(int $size = 450): Factory
+    {
+        return $this->state(function (array $attributes) use ($size) {
+            
+            $path = RandomImageService::generate($size);
+
+            return [
+                'path' => $path,
+            ];
+        });
     }
 }

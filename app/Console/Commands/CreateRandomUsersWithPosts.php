@@ -32,15 +32,16 @@ class CreateRandomUsersWithPosts extends Command
         $this->info("Creating randoms users");
 
         try {
-            User::factory(5)->create();
+            $users = User::factory(3)->create();
 
             $this->info("5 users created");
 
-            User::all()->each(function($user, $index){
+            $users->each(function($user, $index){
 
                 $followers = User::where('id', '!=', $user->id)->inRandomOrder()->limit(rand(1, 3))->get();
 
                 $user->following()->attach($followers->pluck('id'));
+                $user->followers()->attach($followers->pluck('id'));
 
                 $totalPosts = rand(1, 4);
                 
@@ -51,7 +52,7 @@ class CreateRandomUsersWithPosts extends Command
                     
                     $this->info("Downloading {$totalFiles} random images for post {$index}");
                     
-                    $files = File::factory($totalFiles)->create();
+                    $files = File::factory($totalFiles)->image(450)->create();
                     
                     $this->info("Random images downloaded");
 

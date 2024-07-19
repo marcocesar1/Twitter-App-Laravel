@@ -22,4 +22,10 @@ class PostFactory extends Factory
             'body' => $this->faker->text(),
         ];
     }
+
+    public function withUser(){
+        return $this->state(fn (array $attributes) => [
+            'user_id' => fn() => User::factory()->create(),
+        ]);
+    }
 }

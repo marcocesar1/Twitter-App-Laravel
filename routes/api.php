@@ -6,8 +6,10 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
-
+use App\Models\File;
+use App\Models\Post;
 use App\Models\User;
+use Database\Factories\FileFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -78,3 +80,19 @@ Route::get('/user', function (Request $request) {
 Route::get('/private', function () {
     return 'private';
 })->middleware('auth:sanctum');
+
+Route::get('factory', function(){
+    //return File::factory()->image(100)->create();
+
+    /* $user = User::factory()->create();
+    return $user->load('profileImg'); */
+
+    return Post::factory()->withUser()->create();
+});
+
+Route::get('followers', function(){
+    $user = User::find(1);
+    return $user->following()->get()->pluck('id');
+
+    return User::with('following')->find(1);
+});
