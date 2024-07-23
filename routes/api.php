@@ -34,7 +34,12 @@ Route::get('profile/show/{user}', [ProfileController::class, 'me'])->middleware(
 Route::get('profile/posts/{user}', [ProfileController::class, 'posts'])->middleware('auth:sanctum');
 Route::apiResource('profile', ProfileController::class)->middleware('auth:sanctum');
 
-Route::apiResource('comments', CommentController::class)->middleware('auth:sanctum');
+Route::apiResource('comments', CommentController::class)
+        ->middleware('auth:sanctum')
+        ->name('store', 'store_comment')
+        ->name('show', 'show_comment')
+        ->name('update', 'update_comment')
+        ->name('destroy', 'delete_comment');
 
 
 Route::get('users/follow/{user}', [UserController::class, 'follow'])->middleware('auth:sanctum');

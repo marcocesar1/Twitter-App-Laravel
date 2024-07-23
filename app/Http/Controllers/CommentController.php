@@ -14,7 +14,7 @@ use App\Http\Requests\Comment\UpdateCommentRequest;
 use Exception;
 use App\Http\Responses\ApiErrorResponse;
 use App\Http\Responses\ApiSuccessResponse;
-
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
@@ -31,9 +31,12 @@ class CommentController extends Controller
      */
     public function store(StoreCommentRequest $request, CreateCommentUseCase $usecase)
     {
+        $user = Auth::user();
+
         try {
             $post = $usecase->execute(
                 commentData: $request->all(),
+                user: $user,
             );
 
             return new ApiSuccessResponse(
@@ -82,13 +85,16 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment, DeleteCommentUseCase $usecase)
     {
+        $user = Auth::user();
+
         try {
-            $post = $usecase->execute(
-                comment: $comment
+            $usecase->execute(
+                comment: $comment,
+                user: $user,
             );
 
             return new ApiSuccessResponse(
-                data: $post
+                message: 'Comment deleted'
             );
         } catch (Exception $e) {
             return new ApiErrorResponse(

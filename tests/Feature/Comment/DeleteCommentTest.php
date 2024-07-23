@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Post;
 
+use App\Models\Comment;
 use App\Models\File;
 use App\Models\Post;
 use App\Models\User;
@@ -12,7 +13,7 @@ use Illuminate\Http\Response;
 use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 
-class DeletePostTest extends TestCase
+class DeleteCommentTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -26,11 +27,16 @@ class DeletePostTest extends TestCase
             'user_id' => $this->user->id
         ]);
 
+        $comment = Comment::factory()->create([
+            'post_id' => $post->id,
+            'user_id' => $this->user->id,
+        ]);
+
         $response = $this->withHeaders([
                             'Authorization' => 'Bearer ' . $this->token,
                         ])->deleteJson(
-                            uri: route('delete_post', [
-                                'post' => $post->id,
+                            uri: route('delete_comment', [
+                                'comment' => $comment->id,
                             ]),
                         );
 
@@ -40,7 +46,7 @@ class DeletePostTest extends TestCase
         ]);
         $response->assertJsonFragment([
             'data' => [
-                'message' => 'Post deleted'
+                'message' => 'Comment deleted'
             ]
         ]);
     }
@@ -50,11 +56,16 @@ class DeletePostTest extends TestCase
     {
         $post = Post::factory()->withUser()->create();
 
+        $comment = Comment::factory()->create([
+            'post_id' => $post->id,
+            'user_id' => $post->user_id,
+        ]);
+
         $response = $this->withHeaders([
                             'Authorization' => 'Bearer ' . $this->token,
                         ])->deleteJson(
-                            uri: route('delete_post', [
-                                'post' => $post->id,
+                            uri: route('delete_comment', [
+                                'comment' => $comment->id,
                             ]),
                         );
 
@@ -62,13 +73,13 @@ class DeletePostTest extends TestCase
     }
     
     #[Test]
-    public function a_authenticated_user_cannot_delete_a_post_with_invalid_id()
+    public function a_authenticated_user_cannot_delete_a_comment_with_invalid_id()
     {
         $response = $this->withHeaders([
                             'Authorization' => 'Bearer ' . $this->token,
                         ])->deleteJson(
-                            uri: route('delete_post', [
-                                'post' => 400,
+                            uri: route('delete_comment', [
+                                'comment' => 400,
                             ]),
                         );
 
@@ -76,11 +87,11 @@ class DeletePostTest extends TestCase
     }
     
     #[Test]
-    public function a_authenticated_user_cannot_delete_a_post()
+    public function a_authenticated_user_cannot_delete_a_comment()
     {
         $response = $this->deleteJson(
-                            uri: route('delete_post', [
-                                'post' => 400,
+                            uri: route('delete_comment', [
+                                'comment' => 400,
                             ]),
                         );
 
