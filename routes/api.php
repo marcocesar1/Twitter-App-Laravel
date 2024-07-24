@@ -28,7 +28,9 @@ Route::apiResource('posts', PostController::class)
         ->name('update', 'update_post')
         ->name('destroy', 'delete_post');
 
-Route::apiResource('files', FileController::class)->middleware('auth:sanctum');
+Route::apiResource('files', FileController::class)
+        ->middleware('auth:sanctum')
+        ->name('store', 'store_files');
 
 Route::get('profile/show/{user}', [ProfileController::class, 'me'])->middleware('auth:sanctum');
 Route::get('profile/posts/{user}', [ProfileController::class, 'posts'])->middleware('auth:sanctum');

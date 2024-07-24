@@ -33,8 +33,12 @@ class FileFactory extends Factory
     public function image(int $size = 450): Factory
     {
         return $this->state(function (array $attributes) use ($size) {
-            
-            $path = RandomImageService::generate($size);
+
+            $path = 'random_path.png';
+
+            if(config('app.env') != 'testing') {
+                $path = RandomImageService::generate($size);
+            }
 
             return [
                 'path' => $path,
