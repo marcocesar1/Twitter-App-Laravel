@@ -43,12 +43,58 @@ class LoginTest extends TestCase
             ]
         ]);
     }
+    
+    #[Test]
+    public function a_existing_user_with_invalid_password_cannot_login()
+    {
+        $user = User::factory()->create();
+
+        $data = [
+            'email' => $user->email,
+            'password' => 'invalid_pasword',
+        ];
+
+        $response = $this->postJson(
+            uri: route('login'),
+            data: $data
+        );
+
+        $response->assertUnauthorized();
+        $response->assertJsonStructure([
+            'message',
+        ]);
+        $response->assertJsonFragment([
+            'message' => 'Invalid credentials'
+        ]);
+    }
+
+     #[Test]
+     public function a_non_existing_user_cannnot_login(): void
+     {
+         $data = [
+             'email' => 'unknown_email@email.com',
+             'password' => 'password',
+         ];
+ 
+         $response = $this->postJson(
+             uri: route('login'),
+             data: $data
+         );
+  
+         $response->assertStatus(Response::HTTP_NOT_FOUND);
+         $response->assertJsonStructure([
+             'message'
+         ]);
+         $response->assertJsonFragment([
+             'message' => 'User does not exist',
+         ]);
+     }
 
     #[Test]
-    public function a_non_existing_user_cannnot_login(): void
+    public function email_must_be_valid_format_email(): void
     {
         $data = [
-            'email' => 'unknown_email@email.com',
+            'email' => 'john@',
             'password' => 'password',
         ];
 
@@ -57,12 +103,16 @@ class LoginTest extends TestCase
             data: $data
         );
  
-        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
         $response->assertJsonStructure([
-            'message'
+            'message',
+            'errors'
         ]);
         $response->assertJsonFragment([
-            'message' => 'Invalid credentials.',
+            'message' => 'The email field must be a valid email address.',
+            'errors' => [
+                'email' => ['The email field must be a valid email address.']
+            ]
         ]);
     }
 
@@ -86,32 +136,6 @@ class LoginTest extends TestCase
             'message' => 'The email field is required.',
             'errors' => [
                 'email' => ['The email field is required.']
-            ]
-        ]);
-    }
-    
-    #[Test]
-    public function email_must_be_valid_format_email(): void
-    {
-        $data = [
-            'email' => 'john@',
-            'password' => 'password',
-        ];
-
-        $response = $this->postJson(
-            uri: route('login'),
-            data: $data
-        );
- 
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertJsonStructure([
-            'message',
-            'errors'
-        ]);
-        $response->assertJsonFragment([
-            'message' => 'The email field must be a valid email address.',
-            'errors' => [
-                'email' => ['The email field must be a valid email address.']
             ]
         ]);
     }

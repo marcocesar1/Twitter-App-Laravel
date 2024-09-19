@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\AppException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -19,6 +20,25 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->render(function (AppException $e, Request $request) {
+            $response = [
+                'message' => $e->getMessage(),
+            ];
+
+            if (!is_null($e) && config('app.debug')){
+                $response['debug'] = [
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                    'message' => $e->getMessage(),
+                    'trace'   => $e->getTraceAsString()
+                ];
+            }
+
+            if ($request->is('api/*')) {
+                return response()->json($response, $e->getCode());
+            }
+        });
+
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
@@ -27,7 +47,27 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
+        /* $exceptions->render(function (\Throwable $e, Request $request) {
+            $response = [
+                'message' => 'Something went wrong'
+            ];
+
+            if (!is_null($e) && config('app.debug')){
+                $response['debug'] = [
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                    'message' => $e->getMessage(),
+                    'trace'   => $e->getTraceAsString()
+                ];
+            }
+
+            if ($request->is('api/*')) {
+                return response()->json($response, Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+        }); */
+
         $exceptions->render(function (\Illuminate\Validation\ValidationException $throwable) {
             Log::info($throwable->errors());
         });
+
     })->create();

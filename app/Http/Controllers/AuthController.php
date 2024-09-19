@@ -18,54 +18,31 @@ use App\Http\Responses\ApiErrorResponse;
 use App\Http\Responses\ApiSuccessResponse;
 
 use Exception;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AuthController extends Controller
 {
     public function login(LoginRequest $request, LoginUserUseCase $usecase)
     {
-        try {
-            $userInfo = $usecase->execute(
-                email: $request->email,
-                password: $request->password,
-            );
+        $userInfo = $usecase->execute(
+            email: $request->email,
+            password: $request->password,
+        );
 
-            return new ApiSuccessResponse(
-                data: $userInfo
-            );
-        } catch (UnauthorizedHttpException $e) {
-            return new ApiErrorResponse(
-                message: $e->getMessage(),
-                exception: $e,
-                statusCode: $e->getStatusCode()
-            );
-        } catch (Exception $e) {
-            return new ApiErrorResponse(
-                message: "Something went wrong",
-                exception: $e,
-                statusCode: Response::HTTP_UNPROCESSABLE_ENTITY
-            );
-        }
+        return new ApiSuccessResponse(
+            data: $userInfo
+        );
     }
 
     public function register(RegisterRequest $request, RegisterUserUseCase $usecase) 
     {
-        try {
-            $user = $usecase->execute(
-                userData: $request->validated()
-            );
+        $user = $usecase->execute(
+            userData: $request->validated()
+        );
 
-            return new ApiSuccessResponse(
-                data: $user
-            );
-        } catch (Exception $e) {
-            return new ApiErrorResponse(
-                message: "Errror creating user",
-                exception: $e,
-            );
-        }
+        return new ApiSuccessResponse(
+            data: $user
+        );
     }
     
     public function changePassword(ChangePasswordRequest $request, ChangeUserPasswordUseCase $usecase) 

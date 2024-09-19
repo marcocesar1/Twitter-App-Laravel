@@ -3,20 +3,20 @@
 namespace App\Core\UseCases\Auth;
 
 use App\Models\User;
+use App\Exceptions\AuthException;
 
 use Illuminate\Support\Facades\Hash;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class LoginUserUseCase {
     public function execute(string $email, string $password): array
     {
         $user = User::where('email', $email)->first();
         if(!$user) {
-             throw new UnauthorizedHttpException('Basic', 'Invalid credentials.');
+             throw AuthException::UserDoesNotExist();
         }
 
         if(!Hash::check($password, $user->password)) {
-             throw new UnauthorizedHttpException('Basic', 'Invalid credentials.');
+             throw AuthException::InvalidCredentials();
         }
 
         $token = $user->createToken('api');
